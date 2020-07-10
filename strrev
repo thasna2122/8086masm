@@ -1,0 +1,130 @@
+;Assembly language program to reverse each word of a string $;;
+;Date:16/06/2020;
+;THASNA C A;
+
+
+.model small
+
+.stack 100h
+
+.data
+ 
+msg1 DB 'Enter your string: $'
+msg2 DB 'The string is:$'
+msg3 DB 10,13,'output:$'
+
+
+buffer  DB 50 DUP(?)
+rev DB 50 DUP(?)
+.code
+
+.startup
+ 
+	MOV DX,OFFSET msg1
+ 	CALL displaymsg
+
+ 	MOV  SI,OFFSET buffer
+	CALL readstr
+
+	MOV DX,OFFSET msg2
+	CALL displaymsg
+
+	MOV DX,OFFSET buffer
+ 	CALL displaymsg
+
+	MOV SI,OFFSET buffer
+	MOV DI,OFFSET rev
+ 
+	MOV BX,SI
+	
+there:  INC SI
+	MOV AL,' '
+	CMP [SI],AL
+        JNE com
+	
+	
+here:   CALL revstr
+        MOV AL,'$'
+	CMP [SI],AL
+	JE print
+	JMP there
+        
+com:	CMP [SI],'$'
+        JNE there
+	JMP here
+	
+        
+	
+print:	MOV [DI],'$'
+	
+	MOV DX,OFFSET msg3
+	CALL displaymsg
+
+
+        MOV DX,OFFSET rev
+        CALL displaymsg
+
+.exit
+
+revstr  PROC NEAR
+	
+
+	MOV CX,SI
+	
+	
+INLOOP: DEC SI
+	MOV AL,[SI]
+	MOV [DI],AL
+	INC DI
+        CMP SI,BX
+        JNZ INLOOP
+       
+        MOV BX,CX
+	MOV SI,BX
+        MOV AL,' '
+        MOV [DI],AL
+	INC DI
+	MOV AL,' '
+        MOV [DI],AL
+
+	RET
+
+
+ 
+        
+revstr ENDP
+
+displaymsg PROC NEAR
+ 	MOV AH,09H
+        INT 21H
+        
+        RET
+displaymsg ENDP
+
+readstr proc near
+  PUSH AX
+  PUSH SI
+ inp:MOV AH,01
+     INT 21H
+
+     MOV [SI],AL
+     INC SI
+     CMP  AL,0DH
+     JNZ INP
+
+     DEC SI
+     MOV AL,'$'
+     MOV [SI],AL
+
+     POP SI
+     POP AX
+     RET
+
+ 
+
+
+readstr ENDP
+
+
+end
+
